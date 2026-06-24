@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Web Navigation{% endblock %}
+{% block page_title %}Quick Links Dashboard{% endblock %}
+
+{% block content %}
+<!-- Quick Links Grid -->
+<div class="links-grid">
+    {% if links %}
+        {% for link in links %}
+            <div class="link-card" data-category="{{ link.category }}">
+                <div class="link-card-header">
+                    <span class="link-icon">{{ link.icon }}</span>
+                    <div class="link-actions">
+                        <button class="btn-remove" onclick="removeLink('{{ loop.index0 }}')"
+                                title="Remove link">×</button>
+                    </div>
+                </div>
+                <div class="link-card-body">
+                    <h3>{{ link.name }}</h3>
+                    <p class="link-category">{{ link.category }}</p>
+                    <a href="{{ link.url }}" target="_blank" class="link-url">
+                        {{ link.url[:30] }}{% if link.url|length > 30 %}...{% endif %}
+                    </a>
+                </div>
+                <div class="link-card-footer">
+                    <a href="{{ link.url }}" target="_blank" class="btn-visit">
+                        Visit →
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="no-links">
+            <p>No links found in this category.</p>
+            <p>Try adding a new link or selecting a different category.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Stats -->
+<div class="stats-bar">
+    <div class="stat-item">
+        <span class="stat-value">{{ links|length }}</span>
+        <span class="stat-label">Links</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-value">{{ categories|length - 1 }}</span>
+        <span class="stat-label">Categories</span>
+    </div>
+    <div class="stat-item">
+        <span class="stat-value">{{ categories|length - 1 }}</span>
+        <span class="stat-label">Categories</span>
+    </div>
+</div>
+
+<script>
+function removeLink(index) {
+    if (confirm('Are you sure you want to remove this link?')) {
+        window.location.href = "{{ url_for('remove_link', index=0) }}".replace('0', index);
+    }
+}
+
+function openAddLinkModal() {
+    document.getElementById('addLinkModal').style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    const modal = document.getElementById('addLinkModal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+</script>
+{% endblock %}

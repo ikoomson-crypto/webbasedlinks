@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}About{% endblock %}
+{% block page_title %}About This System{% endblock %}
+
+{% block content %}
+<div class="about-container">
+    <div class="about-card">
+        <h2>Web Navigation System</h2>
+        <p>Version 1.0.0</p>
+        <p>A modern web-based navigation system with sidebar quick links.</p>
+
+        <h3>Features</h3>
+        <ul>
+            <li>📱 Responsive sidebar navigation</li>
+            <li>🔗 Quick links management</li>
+            <li>🏷️ Category filtering</li>
+            <li>🔍 Search functionality</li>
+            <li>➕ Add/Remove links</li>
+            <li>📊 Dashboard statistics</li>
+        </ul>
+
+        <h3>Technologies</h3>
+        <ul>
+            <li>Python Flask</li>
+            <li>HTML5 & CSS3</li>
+            <li>JavaScript</li>
+            <li>Inter Font</li>
+        </ul>
+    </div>
+</div>
+
+<style>
+.about-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.about-card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.about-card h2 {
+    font-size: 2rem;
+    margin-bottom: 0.25rem;
+}
+
+.about-card h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.about-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.about-card ul li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f7fafc;
+}
+</style>
+{% endblock %}

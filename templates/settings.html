@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+{% block page_title %}Settings{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-card">
+        <h2>Appearance</h2>
+        <div class="settings-option">
+            <label for="theme">Theme</label>
+            <select id="theme">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+                <option value="system">System Default</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="settings-card">
+        <h2>Quick Links</h2>
+        <div class="settings-option">
+            <label>
+                <input type="checkbox" checked> Show icons in sidebar
+            </label>
+            <label>
+                <input type="checkbox" checked> Show categories
+            </label>
+        </div>
+    </div>
+</div>
+
+<style>
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.settings-card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.settings-card h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+}
+
+.settings-option {
+    margin-bottom: 0.75rem;
+}
+
+.settings-option label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.settings-option select {
+    padding: 0.5rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    width: 100%;
+    max-width: 200px;
+}
+</style>
+{% endblock %}

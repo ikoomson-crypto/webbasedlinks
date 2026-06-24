@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Web Navigation System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>🚀 Navigator</h2>
+                <p class="sidebar-subtitle">Quick Access</p>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>Main</h3>
+                    <a href="{{ url_for('index') }}" class="nav-item active">
+                        <span class="nav-icon">🏠</span>
+                        Dashboard
+                    </a>
+                    <a href="{{ url_for('index') }}" class="nav-item">
+                        <span class="nav-icon">🔗</span>
+                        Quick Links
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <h3>Categories</h3>
+                    <a href="{{ url_for('index') }}" class="nav-item category-all">
+                        <span class="nav-icon">📊</span>
+                        All Links
+                    </a>
+                    {% for category in categories %}
+                        {% if category != 'All' %}
+                            <a href="{{ url_for('index', category=category) }}"
+                               class="nav-item category-item {% if selected_category == category %}active{% endif %}">
+                                <span class="nav-icon">{{ category_icons.get(category, '📌') }}</span>
+                                {{ category }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <div class="nav-section">
+                    <h3>System</h3>
+                    <a href="{{ url_for('settings') }}" class="nav-item">
+                        <span class="nav-icon">⚙️</span>
+                        Settings
+                    </a>
+                    <a href="{{ url_for('about') }}" class="nav-item">
+                        <span class="nav-icon">ℹ️</span>
+                        About
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <span class="user-avatar">👤</span>
+                    <span class="user-name">User</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                    <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <form action="{{ url_for('search') }}" method="get">
+                            <input type="text" name="q" placeholder="Search links..."
+                                   value="{{ search_query if search_query else '' }}">
+                            <button type="submit">🔍</button>
+                        </form>
+                    </div>
+                    <button class="btn-add-link" onclick="openAddLinkModal()">+ Add Link</button>
+                </div>
+            </header>
+
+            <div class="content-area">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Link Modal -->
+    <div id="addLinkModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal('addLinkModal')">&times;</span>
+            <h2>Add New Quick Link</h2>
+            <form action="{{ url_for('add_link') }}" method="post">
+                <div class="form-group">
+                    <label for="linkName">Link Name:</label>
+                    <input type="text" id="linkName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="linkUrl">URL:</label>
+                    <input type="url" id="linkUrl" name="url" required>
+                </div>
+                <div class="form-group">
+                    <label for="linkCategory">Category:</label>
+                    <select id="linkCategory" name="category">
+                        {% for category in categories %}
+                            {% if category != 'All' %}
+                                <option value="{{ category }}">{{ category }}</option>
+                            {% endif %}
+                        {% endfor %}
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Add Link</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
