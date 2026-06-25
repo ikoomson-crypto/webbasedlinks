@@ -427,6 +427,45 @@ def settings():
     return render_template('settings.html', username=current_user.username)
 
 
+@app.route('/admin/change_password', methods=['GET', 'POST'])
+@login_required
+def admin_change_password():
+    """Allow admin to change their password"""
+    if current_user.role != 'admin':
+        flash('Admin access required.', 'error')
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        current_password = request.form.get('current_password')
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Verify current password
+        users = load_users()
+        admin_data = users.get(current_user.username)
+
+        if not admin_data or not check_password_hash(admin_data['password'], current_password):
+            flash('Current password is incorrect.', 'error')
+            return redirect(url_for('admin_change_password'))
+
+        # Validate new password
+        if len(new_password) < 6:
+            flash('New password must be at least 6 characters long.', 'error')
+            return redirect(url_for('admin_change_password'))
+
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('admin_change_password'))
+
+        # Update password
+        users[current_user.username]['password'] = generate_password_hash(new_password)
+        save_users(users)
+
+        flash('Password changed successfully!', 'success')
+        return redirect(url_for('admin_dashboard'))
+
+    return render_template('admin_change_password.html')
+
 @app.route('/about')
 def about():
     return render_template('about.html')
