@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{{ url_for('admin_add_user') }}" class="btn-add-link" style="text-decoration: none; display: inline-block;">+ Add New User</a>
+</div>
+
+<div style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead style="background: #f7fafc;">
+            <tr>
+                <th style="padding: 12px 20px; text-align: left; font-weight: 600; color: #2d3748;">Username</th>
+                <th style="padding: 12px 20px; text-align: left; font-weight: 600; color: #2d3748;">Role</th>
+                <th style="padding: 12px 20px; text-align: left; font-weight: 600; color: #2d3748;">Created</th>
+                <th style="padding: 12px 20px; text-align: left; font-weight: 600; color: #2d3748;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for username, user in users.items() %}
+                <tr style="border-top: 1px solid #e2e8f0;">
+                    <td style="padding: 12px 20px;">
+                        <strong>{{ username }}</strong>
+                        {% if username == 'admin' %}
+                            <span style="background: #e53e3e; color: white; padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-left: 8px;">Main Admin</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding: 12px 20px;">
+                        <span style="background: {% if user.role == 'admin' %}#e53e3e{% else %}#4299e1{% endif %}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">
+                            {{ user.role }}
+                        </span>
+                    </td>
+                    <td style="padding: 12px 20px; color: #718096; font-size: 14px;">
+                        {{ user.created_at[:10] if user.created_at else 'N/A' }}
+                    </td>
+                    <td style="padding: 12px 20px;">
+                        <a href="{{ url_for('admin_manage_links', username=username) }}" style="text-decoration: none; color: #4299e1; margin-right: 15px;">🔗 Manage Links</a>
+                        {% if username != 'admin' %}
+                            <a href="{{ url_for('admin_delete_user', username=username) }}" onclick="return confirm('Delete user {{ username }}? This will also delete all their links.')" style="text-decoration: none; color: #e53e3e;">🗑️ Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

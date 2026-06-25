@@ -4,65 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Web Navigation System{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ... (keep existing styles) ... */
+        /* Add these additional styles */
+        .user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .user-badge .role {
+            font-size: 11px;
+            background: #4299e1;
+            padding: 2px 10px;
+            border-radius: 12px;
+            color: white;
+        }
+        .user-badge .role.admin {
+            background: #e53e3e;
+        }
+        .btn-logout {
+            background: none;
+            border: 1px solid #e2e8f0;
+            padding: 6px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #e2e8f0;
+            transition: all 0.2s;
+        }
+        .btn-logout:hover {
+            background: #e53e3e;
+            border-color: #e53e3e;
+        }
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+        .flash {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .flash.success {
+            background: #c6f6d5;
+            color: #276749;
+        }
+        .flash.error {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+        .flash.info {
+            background: #bee3f8;
+            color: #2a69ac;
+        }
+        .admin-badge {
+            background: #e53e3e;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+    </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Sidebar Navigation -->
-        <aside class="sidebar">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h2>🚀 Navigator</h2>
-                <p class="sidebar-subtitle">Quick Access</p>
+                <p style="color: #a0aec0; font-size: 14px; margin-top: 5px;">Welcome, {{ username if username else 'Guest' }}</p>
+                {% if is_admin %}
+                    <span class="admin-badge" style="display: inline-block; margin-top: 5px;">Admin</span>
+                {% endif %}
             </div>
-
             <nav class="sidebar-nav">
                 <div class="nav-section">
                     <h3>Main</h3>
-                    <a href="{{ url_for('index') }}" class="nav-item active">
-                        <span class="nav-icon">🏠</span>
-                        Dashboard
-                    </a>
-                    <a href="{{ url_for('index') }}" class="nav-item">
-                        <span class="nav-icon">🔗</span>
-                        Quick Links
-                    </a>
+                    <a href="{{ url_for('index') }}" class="nav-item active">🏠 Dashboard</a>
+                    {% if is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="nav-item">⚙️ Admin Panel</a>
+                    {% endif %}
                 </div>
-
                 <div class="nav-section">
                     <h3>Categories</h3>
-                    <a href="{{ url_for('index') }}" class="nav-item category-all">
-                        <span class="nav-icon">📊</span>
-                        All Links
-                    </a>
+                    <a href="{{ url_for('index') }}" class="nav-item {% if selected_category == 'All' %}active{% endif %}">📊 All Links</a>
                     {% for category in categories %}
                         {% if category != 'All' %}
-                            <a href="{{ url_for('index', category=category) }}"
-                               class="nav-item category-item {% if selected_category == category %}active{% endif %}">
-                                <span class="nav-icon">{{ category_icons.get(category, '📌') }}</span>
+                            <a href="{{ url_for('index', category=category) }}" class="nav-item {% if selected_category == category %}active{% endif %}">
                                 {{ category }}
                             </a>
                         {% endif %}
                     {% endfor %}
                 </div>
-
                 <div class="nav-section">
                     <h3>System</h3>
-                    <a href="{{ url_for('settings') }}" class="nav-item">
-                        <span class="nav-icon">⚙️</span>
-                        Settings
-                    </a>
-                    <a href="{{ url_for('about') }}" class="nav-item">
-                        <span class="nav-icon">ℹ️</span>
-                        About
-                    </a>
+                    <a href="{{ url_for('settings') }}" class="nav-item">⚙️ Settings</a>
+                    <a href="{{ url_for('about') }}" class="nav-item">ℹ️ About</a>
+                    <a href="{{ url_for('logout') }}" class="nav-item" style="color: #fc8181;">🚪 Logout</a>
                 </div>
             </nav>
-
             <div class="sidebar-footer">
                 <div class="user-info">
-                    <span class="user-avatar">👤</span>
-                    <span class="user-name">User</span>
+                    <span style="font-size: 20px;">👤</span>
+                    <span>{{ username if username else 'Guest' }}</span>
+                    {% if is_admin %}
+                        <span style="font-size: 11px; background: #e53e3e; padding: 2px 10px; border-radius: 12px; color: white;">Admin</span>
+                    {% endif %}
                 </div>
             </div>
         </aside>
@@ -76,17 +126,29 @@
                 </div>
                 <div class="header-right">
                     <div class="search-box">
-                        <form action="{{ url_for('search') }}" method="get">
-                            <input type="text" name="q" placeholder="Search links..."
-                                   value="{{ search_query if search_query else '' }}">
+                        <form action="{{ url_for('index') }}" method="get">
+                            <input type="text" name="q" placeholder="Search links..." value="{{ search_query if search_query else '' }}">
                             <button type="submit">🔍</button>
                         </form>
                     </div>
                     <button class="btn-add-link" onclick="openAddLinkModal()">+ Add Link</button>
+                    <a href="{{ url_for('logout') }}" style="text-decoration: none;">
+                        <button class="btn-logout" style="background: none; border: 1px solid #e2e8f0; padding: 8px 15px; border-radius: 8px; cursor: pointer; color: #2d3748;">Logout</button>
+                    </a>
                 </div>
             </header>
 
             <div class="content-area">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        <div class="flash-messages">
+                            {% for category, message in messages %}
+                                <div class="flash {{ category }}">{{ message }}</div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endwith %}
+
                 {% block content %}{% endblock %}
             </div>
         </main>
@@ -95,33 +157,66 @@
     <!-- Add Link Modal -->
     <div id="addLinkModal" class="modal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeModal('addLinkModal')">&times;</span>
-            <h2>Add New Quick Link</h2>
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">Add New Quick Link</h2>
             <form action="{{ url_for('add_link') }}" method="post">
                 <div class="form-group">
-                    <label for="linkName">Link Name:</label>
-                    <input type="text" id="linkName" name="name" required>
+                    <label>Link Name:</label>
+                    <input type="text" name="name" required placeholder="e.g., Google">
                 </div>
                 <div class="form-group">
-                    <label for="linkUrl">URL:</label>
-                    <input type="url" id="linkUrl" name="url" required>
+                    <label>URL:</label>
+                    <input type="url" name="url" required placeholder="https://example.com">
                 </div>
                 <div class="form-group">
-                    <label for="linkCategory">Category:</label>
-                    <select id="linkCategory" name="category">
-                        {% for category in categories %}
-                            {% if category != 'All' %}
-                                <option value="{{ category }}">{{ category }}</option>
-                            {% endif %}
-                        {% endfor %}
-                        <option value="Other">Other</option>
-                    </select>
+                    <label>Category:</label>
+                    <input type="text" name="category" placeholder="e.g., Search">
+                </div>
+                <div class="form-group">
+                    <label>Icon (emoji):</label>
+                    <input type="text" name="icon" placeholder="e.g., 🌐" value="🔗">
                 </div>
                 <button type="submit" class="btn-submit">Add Link</button>
             </form>
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script>
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+
+        function openAddLinkModal() {
+            document.getElementById('addLinkModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('addLinkModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('addLinkModal')) {
+                closeModal();
+            }
+        }
+
+        function removeLink(index) {
+            if (confirm('Are you sure you want to remove this link?')) {
+                window.location.href = '/remove_link/' + index;
+            }
+        }
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggleBtn = document.querySelector('.sidebar-toggle');
+            if (window.innerWidth <= 768 &&
+                sidebar.classList.contains('open') &&
+                !sidebar.contains(event.target) &&
+                !toggleBtn.contains(event.target)) {
+                sidebar.classList.remove('open');
+            }
+        });
+    </script>
 </body>
 </html>
