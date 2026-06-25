@@ -3,46 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Web Navigation System</title>
+    <title>Sign Up - Web Navigation System</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
         }
-        .login-container {
+        .register-container {
             background: white;
             padding: 40px;
             border-radius: 12px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             width: 100%;
-            max-width: 400px;
+            max-width: 440px;
         }
-        .login-header {
+        .register-header {
             text-align: center;
             margin-bottom: 30px;
         }
-        .login-header h1 {
+        .register-header h1 {
             font-size: 28px;
             color: #2d3748;
         }
-        .login-header p {
+        .register-header p {
             color: #718096;
             margin-top: 5px;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
         .form-group label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
             color: #2d3748;
+            font-size: 14px;
         }
         .form-group input {
             width: 100%;
@@ -57,10 +58,15 @@
             border-color: #4299e1;
             box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
         }
-        .btn-login {
+        .form-group .hint {
+            font-size: 12px;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+        .btn-register {
             width: 100%;
             padding: 12px;
-            background: #4299e1;
+            background: #48bb78;
             color: white;
             border: none;
             border-radius: 8px;
@@ -69,8 +75,8 @@
             cursor: pointer;
             transition: background 0.2s;
         }
-        .btn-login:hover {
-            background: #3182ce;
+        .btn-register:hover {
+            background: #38a169;
         }
         .flash-messages {
             margin-bottom: 20px;
@@ -93,7 +99,7 @@
             background: #bee3f8;
             color: #2a69ac;
         }
-        .register-link {
+        .login-link {
             text-align: center;
             margin-top: 20px;
             padding-top: 20px;
@@ -101,34 +107,39 @@
             color: #718096;
             font-size: 14px;
         }
-        .register-link a {
-            color: #48bb78;
+        .login-link a {
+            color: #4299e1;
             text-decoration: none;
             font-weight: 500;
         }
-        .register-link a:hover {
+        .login-link a:hover {
             text-decoration: underline;
         }
-        .demo-credentials {
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-            font-size: 14px;
+        .password-requirements {
+            font-size: 12px;
             color: #718096;
-        }
-        .demo-credentials code {
+            padding: 8px 12px;
             background: #f7fafc;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 13px;
+            border-radius: 6px;
+            margin-top: 4px;
+        }
+        .password-requirements li {
+            list-style: none;
+            padding: 2px 0;
+        }
+        .password-requirements li.valid {
+            color: #48bb78;
+        }
+        .password-requirements li.invalid {
+            color: #fc8181;
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>🚀 Navigator</h1>
-            <p>Sign in to access your links</p>
+    <div class="register-container">
+        <div class="register-header">
+            <h1>🚀 Create Account</h1>
+            <p>Join Navigator to organize your links</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -144,22 +155,32 @@
         <form method="post">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter username" required>
+                <input type="text" id="username" name="username" placeholder="Choose a username" required>
+                <div class="hint">3-20 characters, letters, numbers, and underscores only</div>
             </div>
+
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter password" required>
+                <input type="password" id="password" name="password" placeholder="Create a password" required>
+                <div class="hint">At least 6 characters</div>
             </div>
-            <button type="submit" class="btn-login">Sign In</button>
+
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+            </div>
+
+            <button type="submit" class="btn-register">Create Account</button>
         </form>
 
-        <div class="register-link">
-            Don't have an account? <a href="{{ url_for('register') }}">Sign Up</a>
+        <div class="login-link">
+            Already have an account? <a href="{{ url_for('login') }}">Sign In</a>
         </div>
 
-        <div class="demo-credentials">
-            <p><strong>Demo Credentials:</strong></p>
-            <p>Admin: <code>admin</code> / <code>admin123</code></p>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <p style="font-size: 13px; color: #a0aec0; text-align: center;">
+                By creating an account, you'll get your own personalized link dashboard.
+            </p>
         </div>
     </div>
 </body>

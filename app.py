@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import os
 from datetime import datetime
+import re
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here_change_in_production'
@@ -89,6 +90,24 @@ def update_user_links(username, links):
     save_links(links_data)
 
 
+def validate_username(username):
+    """Validate username: alphanumeric, 3-20 characters"""
+    if not username or len(username) < 3:
+        return False, "Username must be at least 3 characters long."
+    if len(username) > 20:
+        return False, "Username must be less than 20 characters."
+    if not re.match(r'^[a-zA-Z0-9_]+$', username):
+        return False, "Username can only contain letters, numbers, and underscores."
+    return True, ""
+
+
+def validate_password(password):
+    """Validate password: at least 6 characters"""
+    if not password or len(password) < 6:
+        return False, "Password must be at least 6 characters long."
+    return True, ""
+
+
 # User class for Flask-Login
 class User(UserMixin):
     def __init__(self, user_data):
@@ -153,9 +172,64 @@ def login():
             else:
                 flash('Invalid password.', 'error')
         else:
-            flash('User not found.', 'error')
+            flash('User not found. Please sign up first.', 'error')
 
     return render_template('login.html')
+
+
+# NEW: Registration Route
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+
+        # Validate username
+        is_valid, message = validate_username(username)
+        if not is_valid:
+            flash(message, 'error')
+            return render_template('register.html')
+
+        # Validate password
+        is_valid, message = validate_password(password)
+        if not is_valid:
+            flash(message, 'error')
+            return render_template('register.html')
+
+        # Check if passwords match
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('register.html')
+
+        # Check if user already exists
+        users = load_users()
+        if username in users:
+            flash('Username already exists. Please choose another one.', 'error')
+            return render_template('register.html')
+
+        # Create new user (default role: 'user')
+        users[username] = {
+            'id': username,
+            'username': username,
+            'password': generate_password_hash(password),
+            'role': 'user',  # New users are regular users by default
+            'created_at': datetime.now().isoformat()
+        }
+        save_users(users)
+
+        # Initialize empty links for new user
+        links_data = load_links()
+        links_data[username] = []
+        save_links(links_data)
+
+        flash('Account created successfully! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('register.html')
 
 
 @app.route('/logout')
@@ -212,6 +286,12 @@ def admin_add_user():
         users = load_users()
         if username in users:
             flash('Username already exists.', 'error')
+            return redirect(url_for('admin_add_user'))
+
+        # Validate username
+        is_valid, message = validate_username(username)
+        if not is_valid:
+            flash(message, 'error')
             return redirect(url_for('admin_add_user'))
 
         users[username] = {
@@ -300,16 +380,6 @@ def admin_manage_links(username):
                 removed = user_links.pop(index)
                 update_user_links(username, user_links)
                 flash(f'Removed "{removed["name"]}" from {username}', 'success')
-
-        elif action == 'update':
-            index = int(request.form.get('index'))
-            if 0 <= index < len(user_links):
-                user_links[index]['name'] = request.form.get('name')
-                user_links[index]['url'] = request.form.get('url')
-                user_links[index]['category'] = request.form.get('category', 'Uncategorized')
-                user_links[index]['icon'] = request.form.get('icon', '🔗')
-                update_user_links(username, user_links)
-                flash(f'Link updated for {username}!', 'success')
 
         return redirect(url_for('admin_manage_links', username=username))
 
