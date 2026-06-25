@@ -1,0 +1,58 @@
+{
+  "admin": [
+    {
+      "name": "Google",
+      "url": "https://www.google.com",
+      "icon": "\ud83c\udf10",
+      "category": "Search"
+    },
+    {
+      "name": "GitHub",
+      "url": "https://github.com",
+      "icon": "\ud83d\udc19",
+      "category": "Development"
+    },
+    {
+      "name": "Stack Overflow",
+      "url": "https://stackoverflow.com",
+      "icon": "\ud83d\udca1",
+      "category": "Development"
+    },
+    {
+      "name": "YouTube",
+      "url": "https://www.youtube.com",
+      "icon": "\ud83d\udcfa",
+      "category": "Entertainment"
+    },
+    {
+      "name": "Reddit",
+      "url": "https://www.reddit.com",
+      "icon": "\ud83d\udd34",
+      "category": "Social"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com",
+      "icon": "\ud83d\udcbc",
+      "category": "Professional"
+    },
+    {
+      "name": "Amazon",
+      "url": "https://www.amazon.com",
+      "icon": "\ud83d\uded2",
+      "category": "Shopping"
+    },
+    {
+      "name": "Netflix",
+      "url": "https://www.netflix.com",
+      "icon": "\ud83c\udfac",
+      "category": "Entertainment"
+    },
+    {
+      "name": "Wikipedia",
+      "url": "https://www.wikipedia.org",
+      "icon": "\ud83d\udcda",
+      "category": "Reference"
+    }
+  ]
+}
